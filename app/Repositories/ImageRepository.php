@@ -10,12 +10,12 @@ class ImageRepository implements ImageRepositoryInterface
 {
     public function getAll()
     {
-        return Image::all();
+        return Image::with('logs:id,image_id,message,status')->get();
     }
 
     public function findById(int $id): ?Image
     {
-        return Image::find($id);
+        return Image::with('logs:id,image_id,message,status,created_at')->find($id);
     }
 
     public function compressImage(array $data): Image
@@ -24,12 +24,13 @@ class ImageRepository implements ImageRepositoryInterface
 
         CompressionLog::create([
             'image_id'   => $image->id,
-            'api_key_id' => $data['api_key_id'],
             'status'     => 'success',
             'message'    => 'Image compressed successfully',
         ]);
 
-        return $image;
+        return $image->load([
+            'logs:id,image_id,message,status,created_at'
+        ]);
     }
 
     public function logFailedCompressImage(string $errorMsg): void

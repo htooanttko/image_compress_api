@@ -11,7 +11,7 @@ class ImageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,10 +22,10 @@ class ImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'format' => ['required', 'string'],
-            'quality' => ['required', 'integer'],
-            'width' =>  ['required', 'integer'],
-            'height' =>  ['required', 'integer'],
+            'format' => ['string'],
+            'quality' => ['integer'],
+            'width' =>  ['integer'],
+            'height' =>  ['integer'],
             'image' => ['required', 'image', 'mimes:png,jpg,jpeg,webp', 'max:15360'], // Max 15 MB
         ];
     }

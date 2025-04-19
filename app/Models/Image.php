@@ -14,7 +14,9 @@ class Image extends Model
 
         'compressed_filename',
         'compressed_size',
-        'compression_filepath',
+        'compressed_filepath',
+
+        'format',
     ];
 
     public function user()

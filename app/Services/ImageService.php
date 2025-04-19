@@ -6,17 +6,16 @@ use App\DTOs\ImageDTO;
 use App\Helpers\EncodeHelper;
 use App\Repositories\Interfaces\ImageRepositoryInterface;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 class ImageService
 {
     private ImageRepositoryInterface $imageRepository;
-    private $imageManager;
 
-    public function __construct(ImageRepositoryInterface $imageRepository, ImageManager $imageManager)
+    public function __construct(ImageRepositoryInterface $imageRepository)
     {
         $this->imageRepository = $imageRepository;
-        $this->imageManager = $imageManager;
     }
 
     public function getImages()
@@ -39,10 +38,11 @@ class ImageService
 
         $originalName = $file->getClientOriginalName();
         $originalSize = $file->getSize();
-        $originalPath = $file->store("images/originals");
+        $originalPath = $file->store("images/originals", 'public');
 
         try {
-            $image = $this->imageManager->read($file->getPathname());
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($file->getPathname());
 
             if ($resizeWidth || $resizeHeight) {
                 $image->resize($resizeWidth, $resizeHeight);
@@ -54,8 +54,8 @@ class ImageService
             $compressedFilename = pathinfo($originalName, PATHINFO_FILENAME) . "_compressed." . $format;
             $compressedPath = "images/compressed/" . $compressedFilename;
 
-            Storage::put($compressedPath, $encodedImage->toString());
-            $compressedSize = Storage::size($compressedPath);
+            Storage::disk('public')->put($compressedPath, $encodedImage->toString());
+            $compressedSize = Storage::disk('public')->size($compressedPath);
 
             $imageRecord = $this->imageRepository->compressImage([
                 'user_id'         => $userId,
@@ -66,10 +66,12 @@ class ImageService
                 'compressed_filename' => $compressedFilename,
                 'compressed_size' => $compressedSize,
                 'compressed_filepath' => $compressedPath,
+
+                'format' => $format
             ]);
 
             return [
-                'image_url' => Storage::url($compressedPath),
+                'image_url' => env('APP_URL') . "/storage/$compressedPath",
                 'original_size' => $originalSize,
                 'compressed_size' => $compressedSize,
                 'format' => $format,

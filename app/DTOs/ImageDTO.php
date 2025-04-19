@@ -8,10 +8,10 @@ class ImageDTO
 {
     public function __construct(
         public int $userId,
-        public string $format,
-        public int $quality,
-        public int $width,
-        public int $height,
+        public ?string $format,
+        public ?int $quality,
+        public ?int $width,
+        public ?int $height,
         public readonly UploadedFile $image,
     ) {}
 
@@ -19,11 +19,11 @@ class ImageDTO
     {
         return new self(
             $userId,
-            $data['format'],
-            $data['quality'],
-            $data['width'],
-            $data['height'],
-            $data['image'],
+            format: $data['format'] ?? null,
+            quality: $data['quality'] ?? null,
+            width: $data['width'] ?? null,
+            height: $data['height'] ?? null,
+            image: $data['image'],
         );
     }
 

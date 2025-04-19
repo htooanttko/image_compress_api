@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('compressed_filename');
             $table->unsignedBigInteger('compressed_size');
             $table->string('compressed_filepath');
+
+            $table->string('format');
             $table->timestamps();
         });
     }

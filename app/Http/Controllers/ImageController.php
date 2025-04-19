@@ -37,6 +37,10 @@ class ImageController extends Controller
         $imageDTO = ImageDTO::fromRequest($validated, $userId);
         $image = $this->imageService->createCompressImage($imageDTO, $userId);
 
-        return $image || (isset($image['error']) && !$image['error']) ? ResponseHelper::success($image) : ResponseHelper::error($image['message'], 500, $image['reason']);
+        if (is_array($image) && isset($image['error']) && $image['error']) {
+            return ResponseHelper::error($image['message'], 500, $image['reason']);
+        }
+
+        return  ResponseHelper::success($image);
     }
 }
