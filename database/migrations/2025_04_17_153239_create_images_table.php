@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('original_filename');
+            $table->unsignedBigInteger('original_size');
+            $table->string('original_filepath');
+
+            $table->string('compressed_filename');
+            $table->unsignedBigInteger('compressed_size');
+            $table->string('compressed_filepath');
             $table->timestamps();
         });
     }

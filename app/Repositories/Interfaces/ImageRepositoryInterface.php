@@ -10,4 +10,6 @@ interface ImageRepositoryInterface
     // public function create(array $data): Blog;
     public function getAll();
     public function findById(int $id): ?Image;
+    public function compressImage(array $data): Image;
+    public function logFailedCompressImage(string $errorMsg);
 }
